@@ -1,0 +1,5 @@
+{
+  "name": "DuoScript AI",
+  "description": "A dual-language scenario generator that creates detailed screenplays in Korean and English based on character and plot inputs.",
+  "requestFramePermissions": []
+}
