@@ -26,7 +26,11 @@ export interface DualScenarioResponse {
   en: ScenarioDetail;
 }
 
+// animationType: 예시) 캐릭터, 실제현실, 판타지, 다큐멘터리 등
+// scenarioType: 예시) 캐릭터, 실제현실, 판타지, 다큐멘터리 등
 export interface UserInput {
   characterConfig: string;
   scenarioConfig: string;
+  scenarioType?: string; // 시나리오 유형(예: 캐릭터, 실제현실, 판타지 등)
+  style?: string; // 매체 스타일(예: 애니메이션, 실사, 웹툰 등)
 }
