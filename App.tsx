@@ -11,6 +11,7 @@ function App() {
   const scenarioRef = useRef<HTMLDivElement>(null);
 
   const handleGenerate = async (input: UserInput) => {
+    console.log('Input received:', input); // Debugging line to verify input
     setLoading(true);
     setError(null);
     setData(null);
@@ -32,51 +33,47 @@ function App() {
     }
   }, [data]);
 
-  // 한글 시나리오 복사
-  const formatTextForCopyKo = (scenario: DualScenarioResponse) => {
-    const ko = scenario.ko;
-    let text = `제목: "${ko.title}"
-`;
-    text += `장르: ${ko.genre}
-`;
-    text += `주인공:\n\n`;
-    text += `이름: ${ko.protagonist.name}\n\n`;
-    text += `특징: ${ko.protagonist.features}\n\n`;
-    text += `시놉시스\n\n${ko.synopsis}\n\n`;
-    text += `시나리오\n`;
-    ko.scenes.forEach((scene: Scene) => {
-      text += `장면 ${scene.scene_number}: ${scene.title}\n\n`;
-      text += `시각: ${scene.time}\n\n`;
-      text += `액션: ${scene.action}\n\n`;
-      text += `감정: ${scene.emotion}\n\n`;
-      text += `시각적 포인트: ${scene.visual_point}\n\n`;
-      text += `사운드: ${scene.sound}\n\n`;
-    });
-    return text;
-  };
+ const formatTextForCopyKo = (scenario: DualScenarioResponse) => {
+  const ko = scenario.ko;
+  let text = `제목: "${ko.title}"\n`;
+  text += `장르: ${ko.genre}\n`;
+  text += `매체 스타일: ${ko.mediaStyle}\n`;
+  text += `주인공:\n\n`;
+  text += `이름: ${ko.protagonist.name}\n\n`;
+  text += `특징: ${ko.protagonist.features}\n\n`;
+  text += `시놉시스\n\n${ko.synopsis}\n\n`;
+  text += `시나리오\n`;
+  ko.scenes.forEach((scene: Scene) => {
+    text += `장면 ${scene.scene_number}: ${scene.title}\n\n`;
+    text += `시각: ${scene.time}\n\n`;
+    text += `액션: ${scene.action}\n\n`;
+    text += `감정: ${scene.emotion}\n\n`;
+    text += `시각적 포인트: ${scene.visual_point}\n\n`;
+    text += `사운드: ${scene.sound}\n\n`;
+  });
+  return text;
+};
 
-  // 영어 시나리오 복사
-  const formatTextForCopyEn = (scenario: DualScenarioResponse) => {
-    const en = scenario.en;
-    let text = `Title: "${en.title}"
-`;
-    text += `Genre: ${en.genre}
-`;
-    text += `Protagonist:\n\n`;
-    text += `Name: ${en.protagonist.name}\n\n`;
-    text += `Features: ${en.protagonist.features}\n\n`;
-    text += `Synopsis\n\n${en.synopsis}\n\n`;
-    text += `Scenario\n`;
-    en.scenes.forEach((scene: Scene) => {
-      text += `Scene ${scene.scene_number}: ${scene.title}\n\n`;
-      text += `Time: ${scene.time}\n\n`;
-      text += `Action: ${scene.action}\n\n`;
-      text += `Emotion: ${scene.emotion}\n\n`;
-      text += `Visual Point: ${scene.visual_point}\n\n`;
-      text += `Sound: ${scene.sound}\n\n`;
-    });
-    return text;
-  };
+const formatTextForCopyEn = (scenario: DualScenarioResponse) => {
+  const en = scenario.en;
+  let text = `Title: "${en.title}"\n`;
+  text += `Genre: ${en.genre}\n`;
+  text += `Media Style: ${en.mediaStyle}\n`;
+  text += `Protagonist:\n\n`;
+  text += `Name: ${en.protagonist.name}\n\n`;
+  text += `Features: ${en.protagonist.features}\n\n`;
+  text += `Synopsis\n\n${en.synopsis}\n\n`;
+  text += `Scenario\n`;
+  en.scenes.forEach((scene: Scene) => {
+    text += `Scene ${scene.scene_number}: ${scene.title}\n\n`;
+    text += `Time: ${scene.time}\n\n`;
+    text += `Action: ${scene.action}\n\n`;
+    text += `Emotion: ${scene.emotion}\n\n`;
+    text += `Visual Point: ${scene.visual_point}\n\n`;
+    text += `Sound: ${scene.sound}\n\n`;
+  });
+  return text;
+};
 
   const handleCopyKo = () => {
     if (!data) return;

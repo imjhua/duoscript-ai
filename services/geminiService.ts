@@ -28,6 +28,7 @@ const scenarioDetailSchema: Schema = {
   properties: {
     title: { type: Type.STRING },
     genre: { type: Type.STRING },
+    mediaStyle: { type: Type.STRING }, // 매체 스타일 필드 추가
     protagonist: {
       type: Type.OBJECT,
       properties: {
@@ -42,7 +43,7 @@ const scenarioDetailSchema: Schema = {
       items: sceneSchema,
     },
   },
-  required: ["title", "genre", "protagonist", "synopsis", "scenes"],
+  required: ["title", "genre", "mediaStyle", "protagonist", "synopsis", "scenes"], // mediaStyle도 필수로 지정
 };
 
 const responseSchema: Schema = {
@@ -83,6 +84,7 @@ export const generateScenario = async (input: UserInput): Promise<DualScenarioRe
     - "visual_point" should describe lighting, colors, or specific visual details.
     - "emotion" should describe the main character's feelings, thoughts, or relevant state in that scene (even if the character is not human).
   `;
+
 
   try {
     const response = await ai.models.generateContent({

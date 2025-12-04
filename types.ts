@@ -16,6 +16,7 @@ export interface Scene {
 export interface ScenarioDetail {
   title: string;
   genre: string;
+  mediaStyle: string;
   protagonist: Protagonist;
   synopsis: string;
   scenes: Scene[];
