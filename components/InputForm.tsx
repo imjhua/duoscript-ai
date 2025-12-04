@@ -22,13 +22,14 @@ export const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading }) => 
   ];
   const [scenarioType, setScenarioType] = useState('실제현실');
   const styleOptions = [
-    '애니메이션',
+    '2D 애니메이션',
+    '3D 애니메이션',
     '실사',
     '웹툰',
     '연극',
     '기타'
   ];
-  const [style, setStyle] = useState('애니메이션');
+  const [style, setStyle] = useState('2D 애니메이션');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
