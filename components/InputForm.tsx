@@ -10,7 +10,19 @@ interface InputFormProps {
 export const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading }) => {
   const [characterConfig, setCharacterConfig] = useState('');
   const [scenarioConfig, setScenarioConfig] = useState('');
-  const [scenarioConcept, setScenarioConcept] = useState('');
+  // 시나리오 컨셉 라디오 옵션 및 기타 입력
+  const scenarioConceptOptions = [
+    '귀여움',
+    '미래지향',
+    '몽환적',
+    '어둡고 진지함',
+    '유머러스',
+    '감동적',
+    '따뜻함',
+    '기타'
+  ];
+  const [scenarioConcept, setScenarioConcept] = useState('귀여움');
+  const [customConcept, setCustomConcept] = useState('');
   const scenarioTypeOptions = [
     '실제현실',
     '캐릭터',
@@ -37,27 +49,47 @@ export const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading }) => 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!characterConfig.trim() || !scenarioType || !style || !scenarioLanguage) return;
-    onSubmit({ characterConfig, scenarioConfig, scenarioType, style, scenarioLanguage, scenarioConcept });
+    // 기타 선택 시 customConcept 사용
+    const conceptValue = scenarioConcept === '기타' ? customConcept : scenarioConcept;
+    onSubmit({ characterConfig, scenarioConfig, scenarioType, style, scenarioLanguage, scenarioConcept: conceptValue });
   };
 
   return (
     <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 w-full mb-8">
       <div className="space-y-6">
-        {/* 시나리오 컨셉 입력 */}
+        {/* 시나리오 컨셉 라디오 선택 */}
         <div>
-          <label htmlFor="scenarioConcept" className="block text-sm font-bold text-slate-700 mb-2">
+          <label className="block text-sm font-bold text-slate-700 mb-2">
             시나리오 컨셉 <span className="text-slate-400 text-xs font-normal ml-1">(예: 귀여움, 미래지향 등)</span>
           </label>
-          <div className="text-xs text-slate-500 mb-2">시나리오의 전체적인 분위기나 컨셉을 한 단어로 입력해 주세요. (예: 귀여움, 미래지향, 몽환적, 어둡고 진지함 등)</div>
-          <input
-            id="scenarioConcept"
-            type="text"
-            value={scenarioConcept}
-            onChange={e => setScenarioConcept(e.target.value)}
-            placeholder="예) 귀여움, 미래지향, 몽환적, 어둡고 진지함 등"
-            className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all text-sm"
-            disabled={isLoading}
-          />
+          <div className="text-xs text-slate-500 mb-2">시나리오의 전체적인 분위기나 컨셉을 한 단어로 선택하거나 직접 입력해 주세요.</div>
+          <div className="flex flex-wrap gap-3 mb-2">
+            {scenarioConceptOptions.map((opt) => (
+              <label key={opt} className="flex items-center gap-2 cursor-pointer text-sm font-medium">
+                <input
+                  type="radio"
+                  name="scenarioConcept"
+                  value={opt}
+                  checked={scenarioConcept === opt}
+                  onChange={() => setScenarioConcept(opt)}
+                  required
+                  disabled={isLoading}
+                  className="accent-indigo-600"
+                />
+                {opt}
+              </label>
+            ))}
+          </div>
+          {scenarioConcept === '기타' && (
+            <input
+              type="text"
+              value={customConcept}
+              onChange={e => setCustomConcept(e.target.value)}
+              placeholder="직접 입력 (예: 몽환적, 어둡고 진지함 등)"
+              className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all text-sm"
+              disabled={isLoading}
+            />
+          )}
         </div>
         {/* 시나리오 언어 설정 */}
         <div>

@@ -62,6 +62,9 @@ export const generateScenario = async (input: UserInput): Promise<DualScenarioRe
     You are a professional screenwriter assistant.
     Generate a creative screenplay draft based on the user's input.
 
+    **The most important element is the Scenario Concept (시나리오 컨셉)!**
+    - The Scenario Concept determines the overall mood, style, and direction of the entire scenario. It must be reflected in every scene, action, emotion, and visual description.
+    - Always prioritize the Scenario Concept above all other inputs. All creative choices, details, and atmosphere should be strongly influenced by this concept.
 
     The user will provide the following information:
     1. Scenario Type: What is the main subject or theme? (e.g., real world, character, fantasy, documentary, etc.)
@@ -85,6 +88,7 @@ export const generateScenario = async (input: UserInput): Promise<DualScenarioRe
     - Every scene's "visual_point" and "action" must reinforce the 2D animation style, and never use photorealistic or filmic signals.
 
     Requirements:
+    - The scenario concept must be the main driver for all creative decisions. Every scene, action, emotion, and visual must clearly reflect the concept.
     - The scenario type, media style, and scenario language should all influence the overall tone, style, and logic of the screenplay. If any is not provided, use your best judgment.
     - The protagonist (main character) does NOT have to be a human. It can be an object, animal, concept, or anything the user sets.
     - You MUST generate two versions: one in Korean (ko) and one in English (en).
