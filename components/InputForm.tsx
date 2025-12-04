@@ -8,9 +8,9 @@ interface InputFormProps {
 
 
 export const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading }) => {
-  const [characterConfig, setCharacterConfig] = useState('2025년 12월을 맞이한 달력');
-  const [scenarioConfig, setScenarioConfig] = useState('연말을 맞아 달력이 스스로의 존재 이유를 찾는 여정을 그린다.');
-  const [scenarioConcept, setScenarioConcept] = useState('귀여움');
+  const [characterConfig, setCharacterConfig] = useState('');
+  const [scenarioConfig, setScenarioConfig] = useState('');
+  const [scenarioConcept, setScenarioConcept] = useState('');
   const scenarioTypeOptions = [
     '실제현실',
     '캐릭터',
