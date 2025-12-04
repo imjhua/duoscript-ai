@@ -228,6 +228,33 @@ export default defineConfig(({ mode }) => {
 });
 </file>
 
+<file path="package.json">
+{
+  "name": "duoscript-ai",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@google/genai": "^1.31.0",
+    "react": "^19.2.1",
+    "react-dom": "^19.2.1",
+    "repomix": "^1.9.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.14.0",
+    "@vitejs/plugin-react": "^5.0.0",
+    "typescript": "~5.8.2",
+    "vite": "^6.2.0"
+  },
+  "packageManager": "pnpm@10.12.1+sha512.f0dda8580f0ee9481c5c79a1d927b9164f2c478e90992ad268bbb2465a736984391d6333d2c327913578b2804af33474ca554ba29c04a8b13060a717675ae3ac"
+}
+</file>
+
 <file path="components/ScenarioView.tsx">
 import React, { useState } from 'react';
 import { DualScenarioResponse, ScenarioDetail, Scene } from '../types';
@@ -373,10 +400,10 @@ export const ScenarioView: React.FC<ScenarioViewProps & { scenarioLanguage?: str
   return (
     <div className="w-full space-y-8 pb-12">
 
-      {/* 시나리오 언어 설정값 표시 */}
+      {/* 언어 설정값 표시 */}
       <div className="mb-4">
         <span className="inline-block bg-blue-50 text-blue-700 px-3 py-1 rounded-md text-sm font-semibold border border-blue-100">
-          시나리오 언어: {scenarioLanguage || '한글'}
+          언어: {scenarioLanguage || '한글'}
         </span>
       </div>
 
@@ -480,326 +507,6 @@ export const ScenarioView: React.FC<ScenarioViewProps & { scenarioLanguage?: str
 };
 </file>
 
-<file path="package.json">
-{
-  "name": "duoscript-ai",
-  "private": true,
-  "version": "0.0.0",
-  "type": "module",
-  "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
-  },
-  "dependencies": {
-    "@google/genai": "^1.31.0",
-    "react": "^19.2.1",
-    "react-dom": "^19.2.1",
-    "repomix": "^1.9.2"
-  },
-  "devDependencies": {
-    "@types/node": "^22.14.0",
-    "@vitejs/plugin-react": "^5.0.0",
-    "typescript": "~5.8.2",
-    "vite": "^6.2.0"
-  },
-  "packageManager": "pnpm@10.12.1+sha512.f0dda8580f0ee9481c5c79a1d927b9164f2c478e90992ad268bbb2465a736984391d6333d2c327913578b2804af33474ca554ba29c04a8b13060a717675ae3ac"
-}
-</file>
-
-<file path="components/InputForm.tsx">
-import React, { useState } from 'react';
-import { UserInput } from '../types';
-
-interface InputFormProps {
-  onSubmit: (input: UserInput) => void;
-  isLoading: boolean;
-}
-
-export const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading }) => {
-  const [characterConfig, setCharacterConfig] = useState('2025년 12월을 맞이한 달력');
-  const [scenarioConfig, setScenarioConfig] = useState('연말을 맞아 달력이 스스로의 존재 이유를 찾는 여정을 그린다.');
-  const scenarioTypeOptions = [
-    '실제현실',
-    '캐릭터',
-    '판타지',
-    '다큐멘터리',
-    '코미디',
-    '스릴러',
-    'SF',
-    '로맨스',
-    '기타'
-  ];
-  const [scenarioType, setScenarioType] = useState('실제현실');
-  const [scenarioLanguage, setScenarioLanguage] = useState('한글');
-  const styleOptions = [
-    '2D 애니메이션',
-    '3D 애니메이션',
-    '실사',
-    '웹툰',
-    '연극',
-    '기타'
-  ];
-  const [style, setStyle] = useState('2D 애니메이션');
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!characterConfig.trim() || !scenarioType || !style || !scenarioLanguage) return;
-    onSubmit({ characterConfig, scenarioConfig, scenarioType, style, scenarioLanguage });
-  };
-
-  return (
-    <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 w-full mb-8">
-      <div className="space-y-6">
-        {/* 시나리오 언어 설정 */}
-        <div>
-          <label className="block text-sm font-bold text-slate-700 mb-2">
-            시나리오 언어 <span className="text-red-500 text-xs ml-1">(필수)</span>
-          </label>
-          <div className="text-xs text-slate-500 mb-2">시나리오를 어떤 언어로 작성할지 선택하세요. (예: 한글, 영어)</div>
-          <div className="flex flex-wrap gap-3">
-            {['한글', '영어'].map((lang) => (
-              <label key={lang} className="flex items-center gap-2 cursor-pointer text-sm font-medium">
-                <input
-                  type="radio"
-                  name="scenarioLanguage"
-                  value={lang}
-                  checked={scenarioLanguage === lang}
-                  onChange={() => setScenarioLanguage(lang)}
-                  required
-                  disabled={isLoading}
-                  className="accent-blue-600"
-                />
-                {lang}
-              </label>
-            ))}
-          </div>
-        </div>
-        {/* 시나리오 유형 */}
-        <div>
-          <label className="block text-sm font-bold text-slate-700 mb-2">
-            1. 시나리오 유형 <span className="text-red-500 text-xs ml-1">(필수)</span>
-          </label>
-          <div className="text-xs text-slate-500 mb-2">무엇에 대한 이야기인가요? (예: 실제현실, 캐릭터, 판타지, 다큐멘터리 등)</div>
-          <div className="flex flex-wrap gap-3">
-            {scenarioTypeOptions.map((opt) => (
-              <label key={opt} className="flex items-center gap-2 cursor-pointer text-sm font-medium">
-                <input
-                  type="radio"
-                  name="scenarioType"
-                  value={opt}
-                  checked={scenarioType === opt}
-                  onChange={() => setScenarioType(opt)}
-                  required
-                  disabled={isLoading}
-                  className="accent-indigo-600"
-                />
-                {opt}
-              </label>
-            ))}
-          </div>
-        </div>
-        {/* 매체 스타일 */}
-        <div>
-          <label className="block text-sm font-bold text-slate-700 mb-2">
-            2. 매체 스타일 <span className="text-red-500 text-xs ml-1">(필수)</span>
-          </label>
-          <div className="text-xs text-slate-500 mb-2">어떤 형식으로 보여줄까요? (예: 애니메이션, 실사, 웹툰, 연극 등)</div>
-          <div className="flex flex-wrap gap-3">
-            {styleOptions.map((opt) => (
-              <label key={opt} className="flex items-center gap-2 cursor-pointer text-sm font-medium">
-                <input
-                  type="radio"
-                  name="style"
-                  value={opt}
-                  checked={style === opt}
-                  onChange={() => setStyle(opt)}
-                  required
-                  disabled={isLoading}
-                  className="accent-violet-600"
-                />
-                {opt}
-              </label>
-            ))}
-          </div>
-        </div>
-        {/* 캐릭터 설정 */}
-        <div>
-          <label htmlFor="character" className="block text-sm font-bold text-slate-700 mb-2">
-            3. 캐릭터 설정 <span className="text-red-500 text-xs ml-1">(필수)</span>
-          </label>
-          <div className="text-xs text-slate-500 mb-2">주인공/등장인물을 설명해 주세요. (예: 2025년 12월을 맞이한 달력. 감정이 있는 사물로, 한 해의 끝자락에서 스스로의 의미를 고민한다.)</div>
-          <textarea
-            id="character"
-            value={characterConfig}
-            onChange={(e) => setCharacterConfig(e.target.value)}
-            placeholder="예) 2025년 12월을 맞이한 달력. 감정이 있는 사물로, 한 해의 끝자락에서 스스로의 의미를 고민한다."
-            className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all min-h-[100px] text-sm resize-y"
-            required
-            disabled={isLoading}
-          />
-        </div>
-        {/* 시나리오 내용 */}
-        <div>
-          <label htmlFor="scenario" className="block text-sm font-bold text-slate-700 mb-2">
-            4. 시나리오 내용 <span className="text-slate-400 text-xs font-normal ml-1">(옵션)</span>
-          </label>
-          <div className="text-xs text-slate-500 mb-2">줄거리/상황을 자유롭게 입력해 주세요. (예: 연말을 맞아 달력이 스스로의 존재 이유를 찾는 여정을 그린다.)</div>
-          <textarea
-            id="scenario"
-            value={scenarioConfig}
-            onChange={(e) => setScenarioConfig(e.target.value)}
-            placeholder="예) 연말을 맞아 달력이 스스로의 존재 이유를 찾는 여정을 그린다."
-            className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all min-h-[80px] text-sm resize-y"
-            disabled={isLoading}
-          />
-        </div>
-
-        <button
-          type="submit"
-          disabled={isLoading || !characterConfig.trim()}
-          className={`w-full py-3 px-6 rounded-lg text-white font-bold text-lg transition-all shadow-md
-            ${isLoading 
-              ? 'bg-slate-400 cursor-not-allowed' 
-              : 'bg-indigo-600 hover:bg-indigo-700 hover:shadow-lg active:scale-[0.99]'
-            }`}
-        >
-          {isLoading ? (
-            <span className="flex items-center justify-center gap-2">
-              <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
-              작가님이 집필중입니다...
-            </span>
-          ) : '시나리오 생성하기'}
-        </button>
-      </div>
-    </form>
-  );
-};
-</file>
-
-<file path="services/geminiService.ts">
-import { GoogleGenAI, Type, Schema } from "@google/genai";
-import { UserInput, DualScenarioResponse } from "../types";
-
-const apiKey = process.env.API_KEY;
-
-if (!apiKey) {
-  console.error("API_KEY is missing from environment variables.");
-}
-
-const ai = new GoogleGenAI({ apiKey: apiKey || "" });
-
-const sceneSchema: Schema = {
-  type: Type.OBJECT,
-  properties: {
-    scene_number: { type: Type.INTEGER },
-    title: { type: Type.STRING },
-    time: { type: Type.STRING },
-    action: { type: Type.STRING },
-    visual_point: { type: Type.STRING },
-    sound: { type: Type.STRING },
-    emotion: { type: Type.STRING },
-  },
-  required: ["scene_number", "title", "time", "action", "visual_point", "sound", "emotion"],
-};
-
-const scenarioDetailSchema: Schema = {
-  type: Type.OBJECT,
-  properties: {
-    title: { type: Type.STRING },
-    genre: { type: Type.STRING },
-    mediaStyle: { type: Type.STRING }, // 매체 스타일 필드 추가
-    protagonist: {
-      type: Type.OBJECT,
-      properties: {
-        name: { type: Type.STRING },
-        features: { type: Type.STRING },
-      },
-      required: ["name", "features"],
-    },
-    synopsis: { type: Type.STRING },
-    scenes: {
-      type: Type.ARRAY,
-      items: sceneSchema,
-    },
-  },
-  required: ["title", "genre", "mediaStyle", "protagonist", "synopsis", "scenes"], // mediaStyle도 필수로 지정
-};
-
-const responseSchema: Schema = {
-  type: Type.OBJECT,
-  properties: {
-    ko: scenarioDetailSchema,
-    en: scenarioDetailSchema,
-  },
-  required: ["ko", "en"],
-};
-
-export const generateScenario = async (input: UserInput): Promise<DualScenarioResponse> => {
-  const modelId = "gemini-2.5-flash"; // Using flash for faster text generation
-
-  const prompt = `
-    You are a professional screenwriter assistant.
-    Generate a creative screenplay draft based on the user's input.
-
-    The user will provide the following information:
-    1. Scenario Type: What is the main subject or theme? (e.g., real world, character, fantasy, documentary, etc.)
-    2. Media Style: What is the format or style? (e.g., animation, live-action, webtoon, play, etc.)
-    3. Character Settings: Describe the protagonist or main characters. (e.g., a calendar in December 2025 with emotions, reflecting on its meaning at the end of the year)
-    4. Scenario Context: Storyline or situation. (e.g., a calendar searching for its purpose at the end of the year)
-    5. Scenario Language: Which language should the scenario be written in? (Korean or English)
-
-    Inputs:
-    1. Scenario Type: ${input.scenarioType || "(No specific scenario type provided. Use your creativity. Examples: real world, character, fantasy, documentary, etc.)"}
-    2. Media Style: ${input.style || "(No specific media style provided. Use your creativity. Examples: animation, live-action, webtoon, play, etc.)"}
-    3. Character Settings: ${input.characterConfig}
-    4. Scenario Context: ${input.scenarioConfig || "Create a suitable story based on the character."}
-    5. Scenario Language: ${input.scenarioLanguage || "한글"}
-
-    Style Enforcement:
-    - This entire scenario must be in a 2D cel-shaded animation style with hand-drawn outlines, flat color shading, and line-art details. Avoid any photorealistic or live-action elements. Use signals such as "cel-shaded", "hand-drawn", "flat colors", "limited color palette", "2D line art", "not photorealistic", "NOT live-action" in every scene description.
-    - For example, describe scenes like: "A worn calendar hangs on the wall, drawn in hand-drawn 2D animation with cel-shaded lighting and clean line-art outlines. The dim room is portrayed with flat colors and soft gradients, avoiding any photorealistic texture. Faint moonlight is represented in stylized blue shading, and floating dust motes appear as simple particle-like dots, not realistic debris."
-    - Every scene's "visual_point" and "action" must reinforce the 2D animation style, and never use photorealistic or filmic signals.
-
-    Requirements:
-    - The scenario type, media style, and scenario language should all influence the overall tone, style, and logic of the screenplay. If any is not provided, use your best judgment.
-    - The protagonist (main character) does NOT have to be a human. It can be an object, animal, concept, or anything the user sets.
-    - You MUST generate two versions: one in Korean (ko) and one in English (en).
-    - The English version should be a translation of the Korean version.
-    - Structure the output exactly according to the JSON schema provided.
-    - Include at least 5 scenes.
-    - "visual_point" should describe lighting, colors, or specific visual details, always in 2D animation style.
-    - "emotion" should describe the main character's feelings, thoughts, or relevant state in that scene (even if the character is not human).
-  `;
-
-
-  try {
-    const response = await ai.models.generateContent({
-      model: modelId,
-      contents: prompt,
-      config: {
-        responseMimeType: "application/json",
-        responseSchema: responseSchema,
-        temperature: 0.7, 
-      },
-    });
-
-    const text = response.text;
-    if (!text) {
-      throw new Error("No response from Gemini.");
-    }
-
-    return JSON.parse(text) as DualScenarioResponse;
-  } catch (error) {
-    console.error("Error generating scenario:", error);
-    throw error;
-  }
-};
-</file>
-
 <file path="App.tsx">
 import React, { useState, useRef, useEffect } from 'react';
 import { InputForm } from './components/InputForm';
@@ -820,6 +527,7 @@ function App() {
     setData(null);
 
     try {
+      // scenarioConcept prop이 포함된 input을 그대로 전달
       const result = await generateScenario(input);
       setData(result);
     } catch (err) {
@@ -836,11 +544,12 @@ function App() {
     }
   }, [data]);
 
- const formatTextForCopyKo = (scenario: DualScenarioResponse) => {
+ const formatTextForCopyKo = (scenario: DualScenarioResponse, scenarioLanguage?: string) => {
   const ko = scenario.ko;
   let text = `제목: "${ko.title}"\n`;
   text += `장르: ${ko.genre}\n`;
   text += `매체 스타일: ${ko.mediaStyle}\n`;
+  text += `언어: ${scenarioLanguage || '한글'}\n`;
   text += `주인공:\n\n`;
   text += `이름: ${ko.protagonist.name}\n\n`;
   text += `특징: ${ko.protagonist.features}\n\n`;
@@ -857,11 +566,12 @@ function App() {
   return text;
 };
 
-const formatTextForCopyEn = (scenario: DualScenarioResponse) => {
+const formatTextForCopyEn = (scenario: DualScenarioResponse, scenarioLanguage?: string) => {
   const en = scenario.en;
   let text = `Title: "${en.title}"\n`;
   text += `Genre: ${en.genre}\n`;
   text += `Media Style: ${en.mediaStyle}\n`;
+  text += `Scenario Language: ${scenarioLanguage || 'English'}\n`;
   text += `Protagonist:\n\n`;
   text += `Name: ${en.protagonist.name}\n\n`;
   text += `Features: ${en.protagonist.features}\n\n`;
@@ -880,7 +590,9 @@ const formatTextForCopyEn = (scenario: DualScenarioResponse) => {
 
   const handleCopyKo = () => {
     if (!data) return;
-    const text = formatTextForCopyKo(data);
+    // 언어 정보 추출 (한글)
+    const scenarioLanguage = '한글';
+    const text = formatTextForCopyKo(data, scenarioLanguage);
     navigator.clipboard.writeText(text).then(() => {
       alert("한글 시나리오가 클립보드에 복사되었습니다!");
     }).catch(err => {
@@ -890,7 +602,9 @@ const formatTextForCopyEn = (scenario: DualScenarioResponse) => {
 
   const handleCopyEn = () => {
     if (!data) return;
-    const text = formatTextForCopyEn(data);
+    // 언어 정보 추출 (영어)
+    const scenarioLanguage = 'English';
+    const text = formatTextForCopyEn(data, scenarioLanguage);
     navigator.clipboard.writeText(text).then(() => {
       alert("English scenario copied to clipboard!");
     }).catch(err => {
@@ -1021,8 +735,367 @@ export interface UserInput {
   scenarioConfig: string;
   scenarioType?: string; // 시나리오 유형(예: 캐릭터, 실제현실, 판타지 등)
   style?: string; // 매체 스타일(예: 애니메이션, 실사, 웹툰 등)
-  scenarioLanguage?: string; // 시나리오 언어(예: 한글, 영어)
+  scenarioLanguage?: string; // 언어(예: 한글, 영어)
+  scenarioConcept?: string; // 컨셉(예: 귀여움, 미래지향 등)
 }
+</file>
+
+<file path="services/geminiService.ts">
+import { GoogleGenAI, Type, Schema } from "@google/genai";
+import { UserInput, DualScenarioResponse } from "../types";
+
+const apiKey = process.env.API_KEY;
+
+if (!apiKey) {
+  console.error("API_KEY is missing from environment variables.");
+}
+
+const ai = new GoogleGenAI({ apiKey: apiKey || "" });
+
+const sceneSchema: Schema = {
+  type: Type.OBJECT,
+  properties: {
+    scene_number: { type: Type.INTEGER },
+    title: { type: Type.STRING },
+    time: { type: Type.STRING },
+    action: { type: Type.STRING },
+    visual_point: { type: Type.STRING },
+    sound: { type: Type.STRING },
+    emotion: { type: Type.STRING },
+  },
+  required: ["scene_number", "title", "time", "action", "visual_point", "sound", "emotion"],
+};
+
+const scenarioDetailSchema: Schema = {
+  type: Type.OBJECT,
+  properties: {
+    title: { type: Type.STRING },
+    genre: { type: Type.STRING },
+    mediaStyle: { type: Type.STRING }, // 매체 스타일 필드 추가
+    protagonist: {
+      type: Type.OBJECT,
+      properties: {
+        name: { type: Type.STRING },
+        features: { type: Type.STRING },
+      },
+      required: ["name", "features"],
+    },
+    synopsis: { type: Type.STRING },
+    scenes: {
+      type: Type.ARRAY,
+      items: sceneSchema,
+    },
+  },
+  required: ["title", "genre", "mediaStyle", "protagonist", "synopsis", "scenes"], // mediaStyle도 필수로 지정
+};
+
+const responseSchema: Schema = {
+  type: Type.OBJECT,
+  properties: {
+    ko: scenarioDetailSchema,
+    en: scenarioDetailSchema,
+  },
+  required: ["ko", "en"],
+};
+
+export const generateScenario = async (input: UserInput): Promise<DualScenarioResponse> => {
+  const modelId = "gemini-2.5-flash"; // Using flash for faster text generation
+
+  const prompt = `
+    You are a professional screenwriter assistant.
+    Generate a creative screenplay draft based on the user's input.
+
+    **The most important element is the Scenario Concept (컨셉)!**
+    - The Scenario Concept determines the overall mood, style, and direction of the entire scenario. It must be reflected in every scene, action, emotion, and visual description.
+    - Always prioritize the Scenario Concept above all other inputs. All creative choices, details, and atmosphere should be strongly influenced by this concept.
+
+    The user will provide the following information:
+    1. Scenario Type: What is the main subject or theme? (e.g., real world, character, fantasy, documentary, etc.)
+    2. Media Style: What is the format or style? (e.g., animation, live-action, webtoon, play, etc.)
+    3. Character Settings: Describe the protagonist or main characters. (e.g., a calendar in December 2025 with emotions, reflecting on its meaning at the end of the year)
+    4. Scenario Context: Storyline or situation. (e.g., a calendar searching for its purpose at the end of the year)
+    5. Scenario Language: Which language should the scenario be written in? (Korean or English)
+    6. Scenario Concept: The overall concept or mood in one word (e.g., cute, futuristic, dreamy, dark and serious, etc.)
+
+    Inputs:
+    1. Scenario Type: ${input.scenarioType || "(No specific scenario type provided. Use your creativity. Examples: real world, character, fantasy, documentary, etc.)"}
+    2. Media Style: ${input.style || "(No specific media style provided. Use your creativity. Examples: animation, live-action, webtoon, play, etc.)"}
+    3. Character Settings: ${input.characterConfig}
+    4. Scenario Context: ${input.scenarioConfig || "Create a suitable story based on the character."}
+    5. Scenario Language: ${input.scenarioLanguage || "한글"}
+    6. Scenario Concept: ${input.scenarioConcept || "(No specific concept provided. Use your creativity. Examples: cute, futuristic, dreamy, dark and serious, etc.)"}
+
+    Style Enforcement:
+    - The style and visual description of the scenario must match the user's selected "Media Style".
+    - If Media Style is "2D 애니메이션" or similar, use 2D cel-shaded animation style with hand-drawn outlines, flat color shading, and line-art details. Avoid any photorealistic or live-action elements. Use signals such as "cel-shaded", "hand-drawn", "flat colors", "limited color palette", "2D line art", "not photorealistic", "NOT live-action" in every scene description.
+    - If Media Style is "실사" or similar, describe scenes in realistic live-action style, with natural lighting, realistic textures, and cinematic details. Avoid cartoon or animation signals.
+    - If Media Style is "웹툰" or similar, describe scenes in webtoon style, with comic panel layouts, bold outlines, vibrant colors, and stylized backgrounds. Avoid photorealistic or animation signals.
+    - If Media Style is "3D 애니메이션" or similar, describe scenes in 3D animation style, with depth, shading, and realistic or stylized 3D elements.
+    - For other styles, adapt the visual and descriptive language to match the selected media style.
+    - Every scene's "visual_point" and "action" must reinforce the selected media style, and never use signals from other styles.
+
+    Requirements:
+    - The scenario concept must be the main driver for all creative decisions. Every scene, action, emotion, and visual must clearly reflect the concept.
+    - The scenario type, media style, and scenario language should all influence the overall tone, style, and logic of the screenplay. If any is not provided, use your best judgment.
+    - The protagonist (main character) does NOT have to be a human. It can be an object, animal, concept, or anything the user sets.
+    - The protagonist's "features" field must include a detailed description of their appearance, clothing, and cultural traits, appropriate for the selected language and culture. For example, if Korean, describe Korean-style design, colors, and cultural signals. If English, describe Western-style design, colors, and cultural signals.
+    - Structure the output exactly according to the JSON schema provided.
+    - Include at least 5 scenes.
+    - "visual_point" should describe lighting, colors, or specific visual details, and must always reflect the selected Media Style. For example, if the style is "실사", describe realistic lighting, textures, and cinematic details. If the style is "2D 애니메이션", describe hand-drawn, cel-shaded visuals. If the style is "웹툰", describe comic-style visuals. If the style is "3D 애니메이션", describe 3D rendered visuals. Do not mix signals from other styles.
+    - "emotion" should describe the main character's feelings, thoughts, or relevant state in that scene (even if the character is not human).
+
+    Language Output Instructions:
+    - If Scenario Language is "한글" or "한국어", generate only the Korean version (ko). The protagonist's nationality, name, cultural background, appearance, clothing, and mannerisms should be Korean and reflect Korean culture.
+    - If Scenario Language is "영어" or "English", generate only the English version (en). The protagonist's nationality, name, cultural background, appearance, clothing, and mannerisms should be foreign (e.g., American, British, etc.) and appropriate for the chosen language and culture.
+    - If Scenario Language is "둘 다", "both", or not specified, generate both Korean (ko) and English (en) versions. The Korean version should have a Korean protagonist, and the English version should have a foreign protagonist. The English version should be a translation of the Korean version, but adapt the protagonist's name, appearance, clothing, and cultural details to fit the language and culture.
+  `;
+
+
+  try {
+    const response = await ai.models.generateContent({
+      model: modelId,
+      contents: prompt,
+      config: {
+        responseMimeType: "application/json",
+        responseSchema: responseSchema,
+        temperature: 0.7, 
+      },
+    });
+
+    const text = response.text;
+    if (!text) {
+      throw new Error("No response from Gemini.");
+    }
+
+    return JSON.parse(text) as DualScenarioResponse;
+  } catch (error) {
+    console.error("Error generating scenario:", error);
+    throw error;
+  }
+};
+</file>
+
+<file path="components/InputForm.tsx">
+import React, { useState } from 'react';
+import { UserInput } from '../types';
+
+interface InputFormProps {
+  onSubmit: (input: UserInput) => void;
+  isLoading: boolean;
+}
+
+
+export const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading }) => {
+  const [characterConfig, setCharacterConfig] = useState('');
+  const [scenarioConfig, setScenarioConfig] = useState('');
+  // 컨셉 라디오 옵션 및 기타 입력
+  const scenarioConceptOptions = [
+    '귀여움',
+    '미래지향',
+    '몽환적',
+    '어둡고 진지함',
+    '유머러스',
+    '감동적',
+    '따뜻함',
+    '기타'
+  ];
+  const [scenarioConcept, setScenarioConcept] = useState('귀여움');
+  const [customConcept, setCustomConcept] = useState('');
+  const scenarioTypeOptions = [
+    '실제현실',
+    '캐릭터',
+    '판타지',
+    '다큐멘터리',
+    '코미디',
+    '스릴러',
+    'SF',
+    '로맨스',
+    '기타'
+  ];
+  const [scenarioType, setScenarioType] = useState('실제현실');
+  const [scenarioLanguage, setScenarioLanguage] = useState('한글');
+  const styleOptions = [
+    '2D 애니메이션',
+    '3D 애니메이션',
+    '실사',
+    '웹툰',
+    '연극',
+    '기타'
+  ];
+  const [style, setStyle] = useState('2D 애니메이션');
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!characterConfig.trim() || !scenarioType || !style || !scenarioLanguage) return;
+    // 기타 선택 시 customConcept 사용
+    const conceptValue = scenarioConcept === '기타' ? customConcept : scenarioConcept;
+    onSubmit({ characterConfig, scenarioConfig, scenarioType, style, scenarioLanguage, scenarioConcept: conceptValue });
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 w-full mb-8">
+      <div className="space-y-6">
+        {/* 언어 설정 */}
+        <div>
+          <label className="block text-sm font-bold text-slate-700 mb-2">
+            언어 <span className="text-red-500 text-xs ml-1">(필수)</span>
+          </label>
+          <div className="text-xs text-slate-500 mb-2">시나리오를 어떤 언어로 작성할지 선택하세요.</div>
+          <div className="flex flex-wrap gap-3">
+            {['한글', '영어'].map((lang) => (
+              <label key={lang} className="flex items-center gap-2 cursor-pointer text-sm font-medium">
+                <input
+                  type="radio"
+                  name="scenarioLanguage"
+                  value={lang}
+                  checked={scenarioLanguage === lang}
+                  onChange={() => setScenarioLanguage(lang)}
+                  required
+                  disabled={isLoading}
+                  className="accent-blue-600"
+                />
+                {lang}
+              </label>
+            ))}
+          </div>
+        </div>
+        {/* 컨셉 라디오 선택 */}
+        <div>
+          <label className="block text-sm font-bold text-slate-700 mb-2">
+            컨셉 <span className="text-red-500 text-xs ml-1">(필수)</span>
+          </label>
+          <div className="text-xs text-slate-500 mb-2">시나리오의 전체적인 분위기나 컨셉을 한 단어로 선택하거나 직접 입력해 주세요.</div>
+          <div className="flex flex-wrap gap-3 mb-2">
+            {scenarioConceptOptions.map((opt) => (
+              <label key={opt} className="flex items-center gap-2 cursor-pointer text-sm font-medium">
+                <input
+                  type="radio"
+                  name="scenarioConcept"
+                  value={opt}
+                  checked={scenarioConcept === opt}
+                  onChange={() => setScenarioConcept(opt)}
+                  required
+                  disabled={isLoading}
+                  className="accent-indigo-600"
+                />
+                {opt}
+              </label>
+            ))}
+          </div>
+          {scenarioConcept === '기타' && (
+            <input
+              type="text"
+              value={customConcept}
+              onChange={e => setCustomConcept(e.target.value)}
+              placeholder="직접 입력"
+              className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all text-sm"
+              disabled={isLoading}
+            />
+          )}
+        </div>
+        {/* 시나리오 유형 */}
+        <div>
+          <label className="block text-sm font-bold text-slate-700 mb-2">
+            1. 시나리오 유형 <span className="text-red-500 text-xs ml-1">(필수)</span>
+          </label>
+          <div className="text-xs text-slate-500 mb-2">무엇에 대한 이야기인가요? (예: 실제현실, 캐릭터, 판타지, 다큐멘터리 등)</div>
+          <div className="flex flex-wrap gap-3">
+            {scenarioTypeOptions.map((opt) => (
+              <label key={opt} className="flex items-center gap-2 cursor-pointer text-sm font-medium">
+                <input
+                  type="radio"
+                  name="scenarioType"
+                  value={opt}
+                  checked={scenarioType === opt}
+                  onChange={() => setScenarioType(opt)}
+                  required
+                  disabled={isLoading}
+                  className="accent-indigo-600"
+                />
+                {opt}
+              </label>
+            ))}
+          </div>
+        </div>
+        {/* 매체 스타일 */}
+        <div>
+          <label className="block text-sm font-bold text-slate-700 mb-2">
+            2. 매체 스타일 <span className="text-red-500 text-xs ml-1">(필수)</span>
+          </label>
+          <div className="text-xs text-slate-500 mb-2">어떤 형식으로 보여줄까요?</div>
+          <div className="flex flex-wrap gap-3">
+            {styleOptions.map((opt) => (
+              <label key={opt} className="flex items-center gap-2 cursor-pointer text-sm font-medium">
+                <input
+                  type="radio"
+                  name="style"
+                  value={opt}
+                  checked={style === opt}
+                  onChange={() => setStyle(opt)}
+                  required
+                  disabled={isLoading}
+                  className="accent-violet-600"
+                />
+                {opt}
+              </label>
+            ))}
+          </div>
+        </div>
+        {/* 캐릭터 설정 */}
+        <div>
+          <label htmlFor="character" className="block text-sm font-bold text-slate-700 mb-2">
+            3. 캐릭터 설정 <span className="text-red-500 text-xs ml-1">(필수)</span>
+          </label>
+          <div className="text-xs text-slate-500 mb-2">주인공/등장인물을 설명해 주세요.</div>
+          <textarea
+            id="character"
+            value={characterConfig}
+            onChange={(e) => setCharacterConfig(e.target.value)}
+            placeholder="예) 2025년 12월을 맞이한 달력. 감정이 있는 사물로, 한 해의 끝자락에서 스스로의 의미를 고민한다."
+            className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all min-h-[100px] text-sm resize-y"
+            required
+            disabled={isLoading}
+          />
+        </div>
+        {/* 시나리오 내용 */}
+        <div>
+          <label htmlFor="scenario" className="block text-sm font-bold text-slate-700 mb-2">
+            4. 시나리오 내용 <span className="text-slate-400 text-xs font-normal ml-1">(옵션)</span>
+          </label>
+          <div className="text-xs text-slate-500 mb-2">줄거리/상황을 자유롭게 입력해 주세요.</div>
+          <textarea
+            id="scenario"
+            value={scenarioConfig}
+            onChange={(e) => setScenarioConfig(e.target.value)}
+            placeholder="예) 연말을 맞아 달력이 스스로의 존재 이유를 찾는 여정을 그린다."
+            className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all min-h-[80px] text-sm resize-y"
+            disabled={isLoading}
+          />
+        </div>
+
+        <button
+          type="submit"
+          disabled={isLoading || !characterConfig.trim()}
+          className={`w-full py-3 px-6 rounded-lg text-white font-bold text-lg transition-all shadow-md
+            ${isLoading 
+              ? 'bg-slate-400 cursor-not-allowed' 
+              : 'bg-indigo-600 hover:bg-indigo-700 hover:shadow-lg active:scale-[0.99]'
+            }`}
+        >
+          {isLoading ? (
+            <span className="flex items-center justify-center gap-2">
+              <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              작가님이 집필중입니다...
+            </span>
+          ) : '시나리오 생성하기'}
+        </button>
+      </div>
+    </form>
+  );
+};
 </file>
 
 </files>

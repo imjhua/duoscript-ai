@@ -39,7 +39,7 @@ function App() {
   let text = `제목: "${ko.title}"\n`;
   text += `장르: ${ko.genre}\n`;
   text += `매체 스타일: ${ko.mediaStyle}\n`;
-  text += `시나리오 언어: ${scenarioLanguage || '한글'}\n`;
+  text += `언어: ${scenarioLanguage || '한글'}\n`;
   text += `주인공:\n\n`;
   text += `이름: ${ko.protagonist.name}\n\n`;
   text += `특징: ${ko.protagonist.features}\n\n`;
@@ -80,7 +80,7 @@ const formatTextForCopyEn = (scenario: DualScenarioResponse, scenarioLanguage?: 
 
   const handleCopyKo = () => {
     if (!data) return;
-    // 시나리오 언어 정보 추출 (한글)
+    // 언어 정보 추출 (한글)
     const scenarioLanguage = '한글';
     const text = formatTextForCopyKo(data, scenarioLanguage);
     navigator.clipboard.writeText(text).then(() => {
@@ -92,7 +92,7 @@ const formatTextForCopyEn = (scenario: DualScenarioResponse, scenarioLanguage?: 
 
   const handleCopyEn = () => {
     if (!data) return;
-    // 시나리오 언어 정보 추출 (영어)
+    // 언어 정보 추출 (영어)
     const scenarioLanguage = 'English';
     const text = formatTextForCopyEn(data, scenarioLanguage);
     navigator.clipboard.writeText(text).then(() => {
