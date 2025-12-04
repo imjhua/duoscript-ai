@@ -34,4 +34,6 @@ export interface UserInput {
   scenarioConfig: string;
   scenarioType?: string; // 시나리오 유형(예: 캐릭터, 실제현실, 판타지 등)
   style?: string; // 매체 스타일(예: 애니메이션, 실사, 웹툰 등)
+  scenarioLanguage?: string; // 시나리오 언어(예: 한글, 영어)
+  scenarioConcept?: string; // 시나리오 컨셉(예: 귀여움, 미래지향 등)
 }

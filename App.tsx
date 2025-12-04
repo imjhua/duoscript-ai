@@ -17,6 +17,7 @@ function App() {
     setData(null);
 
     try {
+      // scenarioConcept prop이 포함된 input을 그대로 전달
       const result = await generateScenario(input);
       setData(result);
     } catch (err) {
@@ -33,11 +34,12 @@ function App() {
     }
   }, [data]);
 
- const formatTextForCopyKo = (scenario: DualScenarioResponse) => {
+ const formatTextForCopyKo = (scenario: DualScenarioResponse, scenarioLanguage?: string) => {
   const ko = scenario.ko;
   let text = `제목: "${ko.title}"\n`;
   text += `장르: ${ko.genre}\n`;
   text += `매체 스타일: ${ko.mediaStyle}\n`;
+  text += `시나리오 언어: ${scenarioLanguage || '한글'}\n`;
   text += `주인공:\n\n`;
   text += `이름: ${ko.protagonist.name}\n\n`;
   text += `특징: ${ko.protagonist.features}\n\n`;
@@ -54,11 +56,12 @@ function App() {
   return text;
 };
 
-const formatTextForCopyEn = (scenario: DualScenarioResponse) => {
+const formatTextForCopyEn = (scenario: DualScenarioResponse, scenarioLanguage?: string) => {
   const en = scenario.en;
   let text = `Title: "${en.title}"\n`;
   text += `Genre: ${en.genre}\n`;
   text += `Media Style: ${en.mediaStyle}\n`;
+  text += `Scenario Language: ${scenarioLanguage || 'English'}\n`;
   text += `Protagonist:\n\n`;
   text += `Name: ${en.protagonist.name}\n\n`;
   text += `Features: ${en.protagonist.features}\n\n`;
@@ -77,7 +80,9 @@ const formatTextForCopyEn = (scenario: DualScenarioResponse) => {
 
   const handleCopyKo = () => {
     if (!data) return;
-    const text = formatTextForCopyKo(data);
+    // 시나리오 언어 정보 추출 (한글)
+    const scenarioLanguage = '한글';
+    const text = formatTextForCopyKo(data, scenarioLanguage);
     navigator.clipboard.writeText(text).then(() => {
       alert("한글 시나리오가 클립보드에 복사되었습니다!");
     }).catch(err => {
@@ -87,7 +92,9 @@ const formatTextForCopyEn = (scenario: DualScenarioResponse) => {
 
   const handleCopyEn = () => {
     if (!data) return;
-    const text = formatTextForCopyEn(data);
+    // 시나리오 언어 정보 추출 (영어)
+    const scenarioLanguage = 'English';
+    const text = formatTextForCopyEn(data, scenarioLanguage);
     navigator.clipboard.writeText(text).then(() => {
       alert("English scenario copied to clipboard!");
     }).catch(err => {

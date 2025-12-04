@@ -6,9 +6,11 @@ interface InputFormProps {
   isLoading: boolean;
 }
 
+
 export const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading }) => {
-  const [characterConfig, setCharacterConfig] = useState('');
-  const [scenarioConfig, setScenarioConfig] = useState('');
+  const [characterConfig, setCharacterConfig] = useState('2025년 12월을 맞이한 달력');
+  const [scenarioConfig, setScenarioConfig] = useState('연말을 맞아 달력이 스스로의 존재 이유를 찾는 여정을 그린다.');
+  const [scenarioConcept, setScenarioConcept] = useState('귀여움');
   const scenarioTypeOptions = [
     '실제현실',
     '캐릭터',
@@ -21,6 +23,7 @@ export const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading }) => 
     '기타'
   ];
   const [scenarioType, setScenarioType] = useState('실제현실');
+  const [scenarioLanguage, setScenarioLanguage] = useState('한글');
   const styleOptions = [
     '2D 애니메이션',
     '3D 애니메이션',
@@ -33,13 +36,53 @@ export const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading }) => 
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!characterConfig.trim() || !scenarioType || !style) return;
-    onSubmit({ characterConfig, scenarioConfig, scenarioType, style });
+    if (!characterConfig.trim() || !scenarioType || !style || !scenarioLanguage) return;
+    onSubmit({ characterConfig, scenarioConfig, scenarioType, style, scenarioLanguage, scenarioConcept });
   };
 
   return (
     <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 w-full mb-8">
       <div className="space-y-6">
+        {/* 시나리오 컨셉 입력 */}
+        <div>
+          <label htmlFor="scenarioConcept" className="block text-sm font-bold text-slate-700 mb-2">
+            시나리오 컨셉 <span className="text-slate-400 text-xs font-normal ml-1">(예: 귀여움, 미래지향 등)</span>
+          </label>
+          <div className="text-xs text-slate-500 mb-2">시나리오의 전체적인 분위기나 컨셉을 한 단어로 입력해 주세요. (예: 귀여움, 미래지향, 몽환적, 어둡고 진지함 등)</div>
+          <input
+            id="scenarioConcept"
+            type="text"
+            value={scenarioConcept}
+            onChange={e => setScenarioConcept(e.target.value)}
+            placeholder="예) 귀여움, 미래지향, 몽환적, 어둡고 진지함 등"
+            className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all text-sm"
+            disabled={isLoading}
+          />
+        </div>
+        {/* 시나리오 언어 설정 */}
+        <div>
+          <label className="block text-sm font-bold text-slate-700 mb-2">
+            시나리오 언어 <span className="text-red-500 text-xs ml-1">(필수)</span>
+          </label>
+          <div className="text-xs text-slate-500 mb-2">시나리오를 어떤 언어로 작성할지 선택하세요. (예: 한글, 영어)</div>
+          <div className="flex flex-wrap gap-3">
+            {['한글', '영어'].map((lang) => (
+              <label key={lang} className="flex items-center gap-2 cursor-pointer text-sm font-medium">
+                <input
+                  type="radio"
+                  name="scenarioLanguage"
+                  value={lang}
+                  checked={scenarioLanguage === lang}
+                  onChange={() => setScenarioLanguage(lang)}
+                  required
+                  disabled={isLoading}
+                  className="accent-blue-600"
+                />
+                {lang}
+              </label>
+            ))}
+          </div>
+        </div>
         {/* 시나리오 유형 */}
         <div>
           <label className="block text-sm font-bold text-slate-700 mb-2">

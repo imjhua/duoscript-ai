@@ -60,239 +60,6 @@ vite.config.ts
 <files>
 This section contains the contents of the repository's files.
 
-<file path="components/ScenarioView.tsx">
-import React, { useState } from 'react';
-import { DualScenarioResponse, ScenarioDetail, Scene } from '../types';
-
-interface ScenarioViewProps {
-  data: DualScenarioResponse;
-}
-
-const formatSceneText = (data: ScenarioDetail, scene: Scene, isKo: boolean) => {
-  if (isKo) {
-    return `제목: "${data.title}"
-시나리오 유형(장르): ${data.genre}
-주인공:
-
-이름: ${data.protagonist.name}
-
-특징: ${data.protagonist.features}
-
-시놉시스
-
-${data.synopsis}
-
-시나리오
-장면 ${scene.scene_number}: ${scene.title}
-
-시각: ${scene.time}
-
-액션: ${scene.action}
-
-감정: ${scene.emotion}
-
-시각적 포인트(매체 스타일 반영): ${scene.visual_point}
-
-사운드: ${scene.sound}`;
-  } else {
-    return `Title: "${data.title}"
-Scenario Type (Genre): ${data.genre}
-Protagonist:
-
-Name: ${data.protagonist.name}
-
-Features: ${data.protagonist.features}
-
-Synopsis
-
-${data.synopsis}
-
-Scenario
-Scene ${scene.scene_number}: ${scene.title}
-
-Time: ${scene.time}
-
-Action: ${scene.action}
-
-Emotion: ${scene.emotion}
-
-Visual Point (Media Style Applied): ${scene.visual_point}
-
-Sound: ${scene.sound}`;
-  }
-};
-
-const SceneCell: React.FC<{ scene: Scene; data: ScenarioDetail; isKo: boolean }> = ({ scene, data, isKo }) => {
-  const [copied, setCopied] = useState(false);
-
-  const handleCopy = () => {
-    const text = formatSceneText(data, scene, isKo);
-    navigator.clipboard.writeText(text).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    });
-  };
-
-  return (
-    <div className={`h-full p-6 ${isKo ? 'bg-white' : 'bg-slate-50/50'}`}>
-      <div className="flex justify-between items-start mb-4">
-        <div>
-          <h4 className="font-bold text-indigo-900 text-lg leading-tight">
-            {isKo ? `장면 ${scene.scene_number}` : `Scene ${scene.scene_number}`}: {scene.title}
-          </h4>
-          <p className="text-xs text-slate-500 font-mono uppercase mt-1.5 tracking-wide flex items-center gap-1">
-             <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-             </svg>
-             {scene.time}
-          </p>
-        </div>
-        <button
-          onClick={handleCopy}
-          className={`shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all shadow-sm border
-            ${copied 
-              ? 'bg-green-100 text-green-700 border-green-200' 
-              : 'bg-white text-slate-600 border-slate-200 hover:border-indigo-300 hover:text-indigo-600'
-            }`}
-          title={isKo ? "장면 및 설정 복사" : "Copy Scene & Settings"}
-        >
-          {copied ? (
-            <>
-              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-              </svg>
-              {isKo ? "완료" : "Done"}
-            </>
-          ) : (
-            <>
-              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
-              </svg>
-              {isKo ? "복사" : "Copy"}
-            </>
-          )}
-        </button>
-      </div>
-      
-      <div className="space-y-4 text-sm">
-        <div>
-          <span className="font-bold text-slate-700 block mb-1.5 text-xs uppercase tracking-wider">{isKo ? '액션 (Action)' : 'Action'}</span>
-          <p className="text-slate-700 leading-relaxed text-[15px]">{scene.action}</p>
-        </div>
-        
-        <div className="grid grid-cols-1 gap-3 pt-3 border-t border-slate-200/60 mt-4">
-           <div>
-              <span className="font-bold text-slate-700 text-xs uppercase tracking-wider block mb-1">{isKo ? '감정 (Emotion)' : 'Emotion'}</span>
-              <span className="text-slate-600 italic block">{scene.emotion}</span>
-           </div>
-           <div>
-              <span className="font-bold text-slate-700 text-xs uppercase tracking-wider block mb-1">{isKo ? '시각적 포인트 (Visual)' : 'Visual Point'}</span>
-              <span className="text-slate-600 block">{scene.visual_point}</span>
-           </div>
-           <div>
-              <span className="font-bold text-slate-700 text-xs uppercase tracking-wider block mb-1">{isKo ? '사운드 (Sound)' : 'Sound'}</span>
-              <span className="text-slate-600 block">{scene.sound}</span>
-           </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-export const ScenarioView: React.FC<ScenarioViewProps> = ({ data }) => {
-  return (
-    <div className="w-full space-y-8 pb-12">
-      
-      {/* 1. Basic Info Section */}
-      <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-        {/* Header: Title & Genre */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 border-b border-slate-200">
-          <div className="p-6 border-b lg:border-b-0 lg:border-r border-slate-200">
-            <span className="block text-xs font-extrabold text-slate-400 uppercase tracking-widest mb-1">Korean</span>
-            <h2 className="text-2xl font-bold text-slate-800 mb-2">{data.ko.title}</h2>
-            <span className="inline-block bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded-md text-sm font-medium border border-indigo-100">
-             시나리오 유형(장르): {data.ko.genre}
-            </span>
-          </div>
-          <div className="p-6 bg-slate-50/50">
-            <span className="block text-xs font-extrabold text-slate-400 uppercase tracking-widest mb-1">English</span>
-            <h2 className="text-2xl font-bold text-slate-800 mb-2">{data.en.title}</h2>
-            <span className="inline-block bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded-md text-sm font-medium border border-indigo-100">
-             Scenario Type (Genre): {data.en.genre}
-            </span>
-          </div>
-        </div>
-
-        {/* Protagonist */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 border-b border-slate-200">
-            <div className="p-6 border-b lg:border-b-0 lg:border-r border-slate-200">
-                <h3 className="text-sm font-bold text-slate-800 mb-3 flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-indigo-500"></span> 주인공
-                </h3>
-                <div className="bg-slate-50 p-4 rounded-lg border border-slate-100">
-                   <p className="font-bold text-slate-700 mb-1">{data.ko.protagonist.name}</p>
-                   <p className="text-slate-600 text-sm leading-relaxed">{data.ko.protagonist.features}</p>
-                </div>
-            </div>
-            <div className="p-6 bg-slate-50/50">
-                <h3 className="text-sm font-bold text-slate-800 mb-3 flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-indigo-500"></span> Protagonist
-                </h3>
-                <div className="bg-white p-4 rounded-lg border border-slate-200">
-                   <p className="font-bold text-slate-700 mb-1">{data.en.protagonist.name}</p>
-                   <p className="text-slate-600 text-sm leading-relaxed">{data.en.protagonist.features}</p>
-                </div>
-            </div>
-        </div>
-
-        {/* Synopsis */}
-        <div className="grid grid-cols-1 lg:grid-cols-2">
-            <div className="p-6 border-b lg:border-b-0 lg:border-r border-slate-200">
-                <h3 className="text-sm font-bold text-slate-800 mb-3 flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-indigo-500"></span> 시놉시스
-                </h3>
-                <p className="text-slate-700 text-sm leading-relaxed whitespace-pre-line">{data.ko.synopsis}</p>
-            </div>
-            <div className="p-6 bg-slate-50/50">
-                <h3 className="text-sm font-bold text-slate-800 mb-3 flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-indigo-500"></span> Synopsis
-                </h3>
-                <p className="text-slate-700 text-sm leading-relaxed whitespace-pre-line">{data.en.synopsis}</p>
-            </div>
-        </div>
-      </div>
-
-      {/* 2. Scenes List */}
-      <div>
-        <div className="flex items-center gap-3 mb-6">
-           <span className="text-3xl">🎬</span> 
-           <h3 className="text-2xl font-bold text-slate-800">
-             시나리오 <span className="text-slate-400 font-normal text-lg ml-1">Scenario</span>
-           </h3>
-        </div>
-
-        <div className="space-y-6">
-            {data.ko.scenes.map((sceneKo, idx) => {
-                const sceneEn = data.en.scenes[idx];
-                return (
-                    <div key={sceneKo.scene_number} className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-                        <div className="grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-slate-200">
-                            {/* Korean Scene */}
-                            <SceneCell scene={sceneKo} data={data.ko} isKo={true} />
-                            {/* English Scene */}
-                            <SceneCell scene={sceneEn} data={data.en} isKo={false} />
-                        </div>
-                    </div>
-                );
-            })}
-        </div>
-      </div>
-
-    </div>
-  );
-};
-</file>
-
 <file path=".gitignore">
 # Logs
 logs
@@ -379,33 +146,6 @@ root.render(
 }
 </file>
 
-<file path="package.json">
-{
-  "name": "duoscript-ai",
-  "private": true,
-  "version": "0.0.0",
-  "type": "module",
-  "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
-  },
-  "dependencies": {
-    "@google/genai": "^1.31.0",
-    "react": "^19.2.1",
-    "react-dom": "^19.2.1",
-    "repomix": "^1.9.2"
-  },
-  "devDependencies": {
-    "@types/node": "^22.14.0",
-    "@vitejs/plugin-react": "^5.0.0",
-    "typescript": "~5.8.2",
-    "vite": "^6.2.0"
-  },
-  "packageManager": "pnpm@10.12.1+sha512.f0dda8580f0ee9481c5c79a1d927b9164f2c478e90992ad268bbb2465a736984391d6333d2c327913578b2804af33474ca554ba29c04a8b13060a717675ae3ac"
-}
-</file>
-
 <file path="README.md">
 <div align="center">
 <img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
@@ -488,6 +228,458 @@ export default defineConfig(({ mode }) => {
 });
 </file>
 
+<file path="components/ScenarioView.tsx">
+import React, { useState } from 'react';
+import { DualScenarioResponse, ScenarioDetail, Scene } from '../types';
+
+interface ScenarioViewProps {
+  data: DualScenarioResponse;
+}
+
+const formatSceneText = (data: ScenarioDetail, scene: Scene, isKo: boolean) => {
+  if (isKo) {
+    return `제목: "${data.title}"
+장르: ${data.genre}
+매체 스타일: ${data.mediaStyle}
+주인공:
+
+이름: ${data.protagonist.name}
+
+특징: ${data.protagonist.features}
+
+시놉시스
+
+${data.synopsis}
+
+시나리오
+장면 ${scene.scene_number}: ${scene.title}
+
+시각: ${scene.time}
+
+액션: ${scene.action}
+
+감정: ${scene.emotion}
+
+시각적 포인트(매체 스타일 반영): ${scene.visual_point}
+
+사운드: ${scene.sound}`;
+  } else {
+    return `Title: "${data.title}"
+Genre: ${data.genre}
+Media Style: ${data.mediaStyle}
+Protagonist:
+
+Name: ${data.protagonist.name}
+
+Features: ${data.protagonist.features}
+
+Synopsis
+
+${data.synopsis}
+
+Scenario
+Scene ${scene.scene_number}: ${scene.title}
+
+Time: ${scene.time}
+
+Action: ${scene.action}
+
+Emotion: ${scene.emotion}
+
+Visual Point (Media Style Applied): ${scene.visual_point}
+
+Sound: ${scene.sound}`;
+  }
+};
+
+const SceneCell: React.FC<{ scene: Scene; data: ScenarioDetail; isKo: boolean }> = ({ scene, data, isKo }) => {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = () => {
+    const text = formatSceneText(data, scene, isKo);
+    navigator.clipboard.writeText(text).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
+
+  return (
+    <div className={`h-full p-6 ${isKo ? 'bg-white' : 'bg-slate-50/50'}`}>
+      <div className="flex justify-between items-start mb-4">
+        <div>
+          <h4 className="font-bold text-indigo-900 text-lg leading-tight">
+            {isKo ? `장면 ${scene.scene_number}` : `Scene ${scene.scene_number}`}: {scene.title}
+          </h4>
+          <p className="text-xs text-slate-500 font-mono uppercase mt-1.5 tracking-wide flex items-center gap-1">
+            <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            {scene.time}
+          </p>
+        </div>
+        <button
+          onClick={handleCopy}
+          className={`shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all shadow-sm border
+            ${copied
+              ? 'bg-green-100 text-green-700 border-green-200'
+              : 'bg-white text-slate-600 border-slate-200 hover:border-indigo-300 hover:text-indigo-600'
+            }`}
+          title={isKo ? "장면 및 설정 복사" : "Copy Scene & Settings"}
+        >
+          {copied ? (
+            <>
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+              </svg>
+              {isKo ? "완료" : "Done"}
+            </>
+          ) : (
+            <>
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+              </svg>
+              {isKo ? "복사" : "Copy"}
+            </>
+          )}
+        </button>
+      </div>
+
+      <div className="space-y-4 text-sm">
+        <div>
+          <span className="font-bold text-slate-700 block mb-1.5 text-xs uppercase tracking-wider">{isKo ? '액션 (Action)' : 'Action'}</span>
+          <p className="text-slate-700 leading-relaxed text-[15px]">{scene.action}</p>
+        </div>
+
+        <div className="grid grid-cols-1 gap-3 pt-3 border-t border-slate-200/60 mt-4">
+          <div>
+            <span className="font-bold text-slate-700 text-xs uppercase tracking-wider block mb-1">{isKo ? '감정 (Emotion)' : 'Emotion'}</span>
+            <span className="text-slate-600 italic block">{scene.emotion}</span>
+          </div>
+          <div>
+            <span className="font-bold text-slate-700 text-xs uppercase tracking-wider block mb-1">{isKo ? '시각적 포인트 (Visual)' : 'Visual Point'}</span>
+            <span className="text-slate-600 block">{scene.visual_point}</span>
+          </div>
+          <div>
+            <span className="font-bold text-slate-700 text-xs uppercase tracking-wider block mb-1">{isKo ? '사운드 (Sound)' : 'Sound'}</span>
+            <span className="text-slate-600 block">{scene.sound}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export const ScenarioView: React.FC<ScenarioViewProps & { scenarioLanguage?: string }> = ({ data, scenarioLanguage }) => {
+  return (
+    <div className="w-full space-y-8 pb-12">
+
+      {/* 시나리오 언어 설정값 표시 */}
+      <div className="mb-4">
+        <span className="inline-block bg-blue-50 text-blue-700 px-3 py-1 rounded-md text-sm font-semibold border border-blue-100">
+          시나리오 언어: {scenarioLanguage || '한글'}
+        </span>
+      </div>
+
+      {/* 1. Basic Info Section */}
+      <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+        {/* Header: Title & Genre */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 border-b border-slate-200">
+          <div className="p-6 border-b lg:border-b-0 lg:border-r border-slate-200">
+            <span className="block text-xs font-extrabold text-slate-400 uppercase tracking-widest mb-1">Korean</span>
+            <h2 className="text-2xl font-bold text-slate-800 mb-2">{data.ko.title}</h2>
+            <div className="space-x-2">
+              <span className="inline-block bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded-md text-sm font-medium border border-indigo-100">
+                {data.ko.genre}
+              </span>
+              <span className="inline-block bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded-md text-sm font-medium border border-indigo-100">
+                {data.ko.mediaStyle}
+              </span>
+            </div>
+          </div>
+          <div className="p-6 bg-slate-50/50">
+            <span className="block text-xs font-extrabold text-slate-400 uppercase tracking-widest mb-1">English</span>
+            <h2 className="text-2xl font-bold text-slate-800 mb-2">{data.en.title}</h2>
+            <div className="space-x-2">
+              <span className="inline-block bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded-md text-sm font-medium border border-indigo-100">
+                {data.en.genre}
+              </span>
+              <span className="inline-block bg-indigo-50 text-indigo-700 px-2.5 py-1 rounded-md text-sm font-medium border border-indigo-100">
+                {data.en.mediaStyle}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Protagonist */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 border-b border-slate-200">
+          <div className="p-6 border-b lg:border-b-0 lg:border-r border-slate-200">
+            <h3 className="text-sm font-bold text-slate-800 mb-3 flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-indigo-500"></span> 주인공
+            </h3>
+            <div className="bg-slate-50 p-4 rounded-lg border border-slate-100">
+              <p className="font-bold text-slate-700 mb-1">{data.ko.protagonist.name}</p>
+              <p className="text-slate-600 text-sm leading-relaxed">{data.ko.protagonist.features}</p>
+            </div>
+          </div>
+          <div className="p-6 bg-slate-50/50">
+            <h3 className="text-sm font-bold text-slate-800 mb-3 flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-indigo-500"></span> Protagonist
+            </h3>
+            <div className="bg-white p-4 rounded-lg border border-slate-200">
+              <p className="font-bold text-slate-700 mb-1">{data.en.protagonist.name}</p>
+              <p className="text-slate-600 text-sm leading-relaxed">{data.en.protagonist.features}</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Synopsis */}
+        <div className="grid grid-cols-1 lg:grid-cols-2">
+          <div className="p-6 border-b lg:border-b-0 lg:border-r border-slate-200">
+            <h3 className="text-sm font-bold text-slate-800 mb-3 flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-indigo-500"></span> 시놉시스
+            </h3>
+            <p className="text-slate-700 text-sm leading-relaxed whitespace-pre-line">{data.ko.synopsis}</p>
+          </div>
+          <div className="p-6 bg-slate-50/50">
+            <h3 className="text-sm font-bold text-slate-800 mb-3 flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-indigo-500"></span> Synopsis
+            </h3>
+            <p className="text-slate-700 text-sm leading-relaxed whitespace-pre-line">{data.en.synopsis}</p>
+          </div>
+        </div>
+      </div>
+
+      {/* 2. Scenes List */}
+      <div>
+        <div className="flex items-center gap-3 mb-6">
+          <span className="text-3xl">🎬</span>
+          <h3 className="text-2xl font-bold text-slate-800">
+            시나리오 <span className="text-slate-400 font-normal text-lg ml-1">Scenario</span>
+          </h3>
+        </div>
+
+        <div className="space-y-6">
+          {data.ko.scenes.map((sceneKo, idx) => {
+            const sceneEn = data.en.scenes[idx];
+            return (
+              <div key={sceneKo.scene_number} className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                <div className="grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-slate-200">
+                  {/* Korean Scene */}
+                  <SceneCell scene={sceneKo} data={data.ko} isKo={true} />
+                  {/* English Scene */}
+                  <SceneCell scene={sceneEn} data={data.en} isKo={false} />
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+    </div>
+  );
+};
+</file>
+
+<file path="package.json">
+{
+  "name": "duoscript-ai",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@google/genai": "^1.31.0",
+    "react": "^19.2.1",
+    "react-dom": "^19.2.1",
+    "repomix": "^1.9.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.14.0",
+    "@vitejs/plugin-react": "^5.0.0",
+    "typescript": "~5.8.2",
+    "vite": "^6.2.0"
+  },
+  "packageManager": "pnpm@10.12.1+sha512.f0dda8580f0ee9481c5c79a1d927b9164f2c478e90992ad268bbb2465a736984391d6333d2c327913578b2804af33474ca554ba29c04a8b13060a717675ae3ac"
+}
+</file>
+
+<file path="components/InputForm.tsx">
+import React, { useState } from 'react';
+import { UserInput } from '../types';
+
+interface InputFormProps {
+  onSubmit: (input: UserInput) => void;
+  isLoading: boolean;
+}
+
+export const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading }) => {
+  const [characterConfig, setCharacterConfig] = useState('2025년 12월을 맞이한 달력');
+  const [scenarioConfig, setScenarioConfig] = useState('연말을 맞아 달력이 스스로의 존재 이유를 찾는 여정을 그린다.');
+  const scenarioTypeOptions = [
+    '실제현실',
+    '캐릭터',
+    '판타지',
+    '다큐멘터리',
+    '코미디',
+    '스릴러',
+    'SF',
+    '로맨스',
+    '기타'
+  ];
+  const [scenarioType, setScenarioType] = useState('실제현실');
+  const [scenarioLanguage, setScenarioLanguage] = useState('한글');
+  const styleOptions = [
+    '2D 애니메이션',
+    '3D 애니메이션',
+    '실사',
+    '웹툰',
+    '연극',
+    '기타'
+  ];
+  const [style, setStyle] = useState('2D 애니메이션');
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!characterConfig.trim() || !scenarioType || !style || !scenarioLanguage) return;
+    onSubmit({ characterConfig, scenarioConfig, scenarioType, style, scenarioLanguage });
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 w-full mb-8">
+      <div className="space-y-6">
+        {/* 시나리오 언어 설정 */}
+        <div>
+          <label className="block text-sm font-bold text-slate-700 mb-2">
+            시나리오 언어 <span className="text-red-500 text-xs ml-1">(필수)</span>
+          </label>
+          <div className="text-xs text-slate-500 mb-2">시나리오를 어떤 언어로 작성할지 선택하세요. (예: 한글, 영어)</div>
+          <div className="flex flex-wrap gap-3">
+            {['한글', '영어'].map((lang) => (
+              <label key={lang} className="flex items-center gap-2 cursor-pointer text-sm font-medium">
+                <input
+                  type="radio"
+                  name="scenarioLanguage"
+                  value={lang}
+                  checked={scenarioLanguage === lang}
+                  onChange={() => setScenarioLanguage(lang)}
+                  required
+                  disabled={isLoading}
+                  className="accent-blue-600"
+                />
+                {lang}
+              </label>
+            ))}
+          </div>
+        </div>
+        {/* 시나리오 유형 */}
+        <div>
+          <label className="block text-sm font-bold text-slate-700 mb-2">
+            1. 시나리오 유형 <span className="text-red-500 text-xs ml-1">(필수)</span>
+          </label>
+          <div className="text-xs text-slate-500 mb-2">무엇에 대한 이야기인가요? (예: 실제현실, 캐릭터, 판타지, 다큐멘터리 등)</div>
+          <div className="flex flex-wrap gap-3">
+            {scenarioTypeOptions.map((opt) => (
+              <label key={opt} className="flex items-center gap-2 cursor-pointer text-sm font-medium">
+                <input
+                  type="radio"
+                  name="scenarioType"
+                  value={opt}
+                  checked={scenarioType === opt}
+                  onChange={() => setScenarioType(opt)}
+                  required
+                  disabled={isLoading}
+                  className="accent-indigo-600"
+                />
+                {opt}
+              </label>
+            ))}
+          </div>
+        </div>
+        {/* 매체 스타일 */}
+        <div>
+          <label className="block text-sm font-bold text-slate-700 mb-2">
+            2. 매체 스타일 <span className="text-red-500 text-xs ml-1">(필수)</span>
+          </label>
+          <div className="text-xs text-slate-500 mb-2">어떤 형식으로 보여줄까요? (예: 애니메이션, 실사, 웹툰, 연극 등)</div>
+          <div className="flex flex-wrap gap-3">
+            {styleOptions.map((opt) => (
+              <label key={opt} className="flex items-center gap-2 cursor-pointer text-sm font-medium">
+                <input
+                  type="radio"
+                  name="style"
+                  value={opt}
+                  checked={style === opt}
+                  onChange={() => setStyle(opt)}
+                  required
+                  disabled={isLoading}
+                  className="accent-violet-600"
+                />
+                {opt}
+              </label>
+            ))}
+          </div>
+        </div>
+        {/* 캐릭터 설정 */}
+        <div>
+          <label htmlFor="character" className="block text-sm font-bold text-slate-700 mb-2">
+            3. 캐릭터 설정 <span className="text-red-500 text-xs ml-1">(필수)</span>
+          </label>
+          <div className="text-xs text-slate-500 mb-2">주인공/등장인물을 설명해 주세요. (예: 2025년 12월을 맞이한 달력. 감정이 있는 사물로, 한 해의 끝자락에서 스스로의 의미를 고민한다.)</div>
+          <textarea
+            id="character"
+            value={characterConfig}
+            onChange={(e) => setCharacterConfig(e.target.value)}
+            placeholder="예) 2025년 12월을 맞이한 달력. 감정이 있는 사물로, 한 해의 끝자락에서 스스로의 의미를 고민한다."
+            className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all min-h-[100px] text-sm resize-y"
+            required
+            disabled={isLoading}
+          />
+        </div>
+        {/* 시나리오 내용 */}
+        <div>
+          <label htmlFor="scenario" className="block text-sm font-bold text-slate-700 mb-2">
+            4. 시나리오 내용 <span className="text-slate-400 text-xs font-normal ml-1">(옵션)</span>
+          </label>
+          <div className="text-xs text-slate-500 mb-2">줄거리/상황을 자유롭게 입력해 주세요. (예: 연말을 맞아 달력이 스스로의 존재 이유를 찾는 여정을 그린다.)</div>
+          <textarea
+            id="scenario"
+            value={scenarioConfig}
+            onChange={(e) => setScenarioConfig(e.target.value)}
+            placeholder="예) 연말을 맞아 달력이 스스로의 존재 이유를 찾는 여정을 그린다."
+            className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all min-h-[80px] text-sm resize-y"
+            disabled={isLoading}
+          />
+        </div>
+
+        <button
+          type="submit"
+          disabled={isLoading || !characterConfig.trim()}
+          className={`w-full py-3 px-6 rounded-lg text-white font-bold text-lg transition-all shadow-md
+            ${isLoading 
+              ? 'bg-slate-400 cursor-not-allowed' 
+              : 'bg-indigo-600 hover:bg-indigo-700 hover:shadow-lg active:scale-[0.99]'
+            }`}
+        >
+          {isLoading ? (
+            <span className="flex items-center justify-center gap-2">
+              <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              작가님이 집필중입니다...
+            </span>
+          ) : '시나리오 생성하기'}
+        </button>
+      </div>
+    </form>
+  );
+};
+</file>
+
 <file path="services/geminiService.ts">
 import { GoogleGenAI, Type, Schema } from "@google/genai";
 import { UserInput, DualScenarioResponse } from "../types";
@@ -551,35 +743,38 @@ export const generateScenario = async (input: UserInput): Promise<DualScenarioRe
 
   const prompt = `
     You are a professional screenwriter assistant.
-    Generate a creative screenplay draft based on the user's input below.
+    Generate a creative screenplay draft based on the user's input.
 
     The user will provide the following information:
     1. Scenario Type: What is the main subject or theme? (e.g., real world, character, fantasy, documentary, etc.)
     2. Media Style: What is the format or style? (e.g., animation, live-action, webtoon, play, etc.)
     3. Character Settings: Describe the protagonist or main characters. (e.g., a calendar in December 2025 with emotions, reflecting on its meaning at the end of the year)
     4. Scenario Context: Storyline or situation. (e.g., a calendar searching for its purpose at the end of the year)
+    5. Scenario Language: Which language should the scenario be written in? (Korean or English)
 
     Inputs:
     1. Scenario Type: ${input.scenarioType || "(No specific scenario type provided. Use your creativity. Examples: real world, character, fantasy, documentary, etc.)"}
     2. Media Style: ${input.style || "(No specific media style provided. Use your creativity. Examples: animation, live-action, webtoon, play, etc.)"}
     3. Character Settings: ${input.characterConfig}
     4. Scenario Context: ${input.scenarioConfig || "Create a suitable story based on the character."}
+    5. Scenario Language: ${input.scenarioLanguage || "한글"}
+
+    Style Enforcement:
+    - This entire scenario must be in a 2D cel-shaded animation style with hand-drawn outlines, flat color shading, and line-art details. Avoid any photorealistic or live-action elements. Use signals such as "cel-shaded", "hand-drawn", "flat colors", "limited color palette", "2D line art", "not photorealistic", "NOT live-action" in every scene description.
+    - For example, describe scenes like: "A worn calendar hangs on the wall, drawn in hand-drawn 2D animation with cel-shaded lighting and clean line-art outlines. The dim room is portrayed with flat colors and soft gradients, avoiding any photorealistic texture. Faint moonlight is represented in stylized blue shading, and floating dust motes appear as simple particle-like dots, not realistic debris."
+    - Every scene's "visual_point" and "action" must reinforce the 2D animation style, and never use photorealistic or filmic signals.
 
     Requirements:
-    - The output JSON must strictly reflect the user's input fields as follows:
-      - The "genre" field must be exactly the user's selected Scenario Type (do not change, translate, or reinterpret).
-      - The "media style" must be reflected in the scenario's visual and narrative style (e.g., If "2D 애니메이션" is selected, the scenes should be described as 2D animation).
-      - The "protagonist" field must use the user's Character Settings exactly as provided (do not change or reinterpret).
-      - The "synopsis" field must use the user's Scenario Context exactly as provided (do not change or reinterpret).
-    - The scenario type and media style should both influence the overall tone, style, and logic of the screenplay. If either is not provided, use your best judgment.
+    - The scenario type, media style, and scenario language should all influence the overall tone, style, and logic of the screenplay. If any is not provided, use your best judgment.
     - The protagonist (main character) does NOT have to be a human. It can be an object, animal, concept, or anything the user sets.
     - You MUST generate two versions: one in Korean (ko) and one in English (en).
     - The English version should be a translation of the Korean version.
     - Structure the output exactly according to the JSON schema provided.
     - Include at least 5 scenes.
-    - "visual_point" should describe lighting, colors, or specific visual details.
+    - "visual_point" should describe lighting, colors, or specific visual details, always in 2D animation style.
     - "emotion" should describe the main character's feelings, thoughts, or relevant state in that scene (even if the character is not human).
   `;
+
 
   try {
     const response = await ai.models.generateContent({
@@ -619,6 +814,7 @@ function App() {
   const scenarioRef = useRef<HTMLDivElement>(null);
 
   const handleGenerate = async (input: UserInput) => {
+    console.log('Input received:', input); // Debugging line to verify input
     setLoading(true);
     setError(null);
     setData(null);
@@ -640,51 +836,47 @@ function App() {
     }
   }, [data]);
 
-  // 한글 시나리오 복사
-  const formatTextForCopyKo = (scenario: DualScenarioResponse) => {
-    const ko = scenario.ko;
-    let text = `제목: "${ko.title}"
-`;
-    text += `장르: ${ko.genre}
-`;
-    text += `주인공:\n\n`;
-    text += `이름: ${ko.protagonist.name}\n\n`;
-    text += `특징: ${ko.protagonist.features}\n\n`;
-    text += `시놉시스\n\n${ko.synopsis}\n\n`;
-    text += `시나리오\n`;
-    ko.scenes.forEach((scene: Scene) => {
-      text += `장면 ${scene.scene_number}: ${scene.title}\n\n`;
-      text += `시각: ${scene.time}\n\n`;
-      text += `액션: ${scene.action}\n\n`;
-      text += `감정: ${scene.emotion}\n\n`;
-      text += `시각적 포인트: ${scene.visual_point}\n\n`;
-      text += `사운드: ${scene.sound}\n\n`;
-    });
-    return text;
-  };
+ const formatTextForCopyKo = (scenario: DualScenarioResponse) => {
+  const ko = scenario.ko;
+  let text = `제목: "${ko.title}"\n`;
+  text += `장르: ${ko.genre}\n`;
+  text += `매체 스타일: ${ko.mediaStyle}\n`;
+  text += `주인공:\n\n`;
+  text += `이름: ${ko.protagonist.name}\n\n`;
+  text += `특징: ${ko.protagonist.features}\n\n`;
+  text += `시놉시스\n\n${ko.synopsis}\n\n`;
+  text += `시나리오\n`;
+  ko.scenes.forEach((scene: Scene) => {
+    text += `장면 ${scene.scene_number}: ${scene.title}\n\n`;
+    text += `시각: ${scene.time}\n\n`;
+    text += `액션: ${scene.action}\n\n`;
+    text += `감정: ${scene.emotion}\n\n`;
+    text += `시각적 포인트: ${scene.visual_point}\n\n`;
+    text += `사운드: ${scene.sound}\n\n`;
+  });
+  return text;
+};
 
-  // 영어 시나리오 복사
-  const formatTextForCopyEn = (scenario: DualScenarioResponse) => {
-    const en = scenario.en;
-    let text = `Title: "${en.title}"
-`;
-    text += `Genre: ${en.genre}
-`;
-    text += `Protagonist:\n\n`;
-    text += `Name: ${en.protagonist.name}\n\n`;
-    text += `Features: ${en.protagonist.features}\n\n`;
-    text += `Synopsis\n\n${en.synopsis}\n\n`;
-    text += `Scenario\n`;
-    en.scenes.forEach((scene: Scene) => {
-      text += `Scene ${scene.scene_number}: ${scene.title}\n\n`;
-      text += `Time: ${scene.time}\n\n`;
-      text += `Action: ${scene.action}\n\n`;
-      text += `Emotion: ${scene.emotion}\n\n`;
-      text += `Visual Point: ${scene.visual_point}\n\n`;
-      text += `Sound: ${scene.sound}\n\n`;
-    });
-    return text;
-  };
+const formatTextForCopyEn = (scenario: DualScenarioResponse) => {
+  const en = scenario.en;
+  let text = `Title: "${en.title}"\n`;
+  text += `Genre: ${en.genre}\n`;
+  text += `Media Style: ${en.mediaStyle}\n`;
+  text += `Protagonist:\n\n`;
+  text += `Name: ${en.protagonist.name}\n\n`;
+  text += `Features: ${en.protagonist.features}\n\n`;
+  text += `Synopsis\n\n${en.synopsis}\n\n`;
+  text += `Scenario\n`;
+  en.scenes.forEach((scene: Scene) => {
+    text += `Scene ${scene.scene_number}: ${scene.title}\n\n`;
+    text += `Time: ${scene.time}\n\n`;
+    text += `Action: ${scene.action}\n\n`;
+    text += `Emotion: ${scene.emotion}\n\n`;
+    text += `Visual Point: ${scene.visual_point}\n\n`;
+    text += `Sound: ${scene.sound}\n\n`;
+  });
+  return text;
+};
 
   const handleCopyKo = () => {
     if (!data) return;
@@ -811,6 +1003,7 @@ export interface Scene {
 export interface ScenarioDetail {
   title: string;
   genre: string;
+  mediaStyle: string;
   protagonist: Protagonist;
   synopsis: string;
   scenes: Scene[];
@@ -828,155 +1021,8 @@ export interface UserInput {
   scenarioConfig: string;
   scenarioType?: string; // 시나리오 유형(예: 캐릭터, 실제현실, 판타지 등)
   style?: string; // 매체 스타일(예: 애니메이션, 실사, 웹툰 등)
+  scenarioLanguage?: string; // 시나리오 언어(예: 한글, 영어)
 }
-</file>
-
-<file path="components/InputForm.tsx">
-import React, { useState } from 'react';
-import { UserInput } from '../types';
-
-interface InputFormProps {
-  onSubmit: (input: UserInput) => void;
-  isLoading: boolean;
-}
-
-export const InputForm: React.FC<InputFormProps> = ({ onSubmit, isLoading }) => {
-  const [characterConfig, setCharacterConfig] = useState('');
-  const [scenarioConfig, setScenarioConfig] = useState('');
-  const scenarioTypeOptions = [
-    '실제현실',
-    '캐릭터',
-    '판타지',
-    '다큐멘터리',
-    '코미디',
-    '스릴러',
-    'SF',
-    '로맨스',
-    '기타'
-  ];
-  const [scenarioType, setScenarioType] = useState('실제현실');
-  const styleOptions = [
-    '2D 애니메이션',
-    '3D 애니메이션',
-    '실사',
-    '웹툰',
-    '연극',
-    '기타'
-  ];
-  const [style, setStyle] = useState('2D 애니메이션');
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!characterConfig.trim() || !scenarioType || !style) return;
-    onSubmit({ characterConfig, scenarioConfig, scenarioType, style });
-  };
-
-  return (
-    <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 w-full mb-8">
-      <div className="space-y-6">
-        {/* 시나리오 유형 */}
-        <div>
-          <label className="block text-sm font-bold text-slate-700 mb-2">
-            1. 시나리오 유형 <span className="text-red-500 text-xs ml-1">(필수)</span>
-          </label>
-          <div className="text-xs text-slate-500 mb-2">무엇에 대한 이야기인가요? (예: 실제현실, 캐릭터, 판타지, 다큐멘터리 등)</div>
-          <div className="flex flex-wrap gap-3">
-            {scenarioTypeOptions.map((opt) => (
-              <label key={opt} className="flex items-center gap-2 cursor-pointer text-sm font-medium">
-                <input
-                  type="radio"
-                  name="scenarioType"
-                  value={opt}
-                  checked={scenarioType === opt}
-                  onChange={() => setScenarioType(opt)}
-                  required
-                  disabled={isLoading}
-                  className="accent-indigo-600"
-                />
-                {opt}
-              </label>
-            ))}
-          </div>
-        </div>
-        {/* 매체 스타일 */}
-        <div>
-          <label className="block text-sm font-bold text-slate-700 mb-2">
-            2. 매체 스타일 <span className="text-red-500 text-xs ml-1">(필수)</span>
-          </label>
-          <div className="text-xs text-slate-500 mb-2">어떤 형식으로 보여줄까요? (예: 애니메이션, 실사, 웹툰, 연극 등)</div>
-          <div className="flex flex-wrap gap-3">
-            {styleOptions.map((opt) => (
-              <label key={opt} className="flex items-center gap-2 cursor-pointer text-sm font-medium">
-                <input
-                  type="radio"
-                  name="style"
-                  value={opt}
-                  checked={style === opt}
-                  onChange={() => setStyle(opt)}
-                  required
-                  disabled={isLoading}
-                  className="accent-violet-600"
-                />
-                {opt}
-              </label>
-            ))}
-          </div>
-        </div>
-        {/* 캐릭터 설정 */}
-        <div>
-          <label htmlFor="character" className="block text-sm font-bold text-slate-700 mb-2">
-            3. 캐릭터 설정 <span className="text-red-500 text-xs ml-1">(필수)</span>
-          </label>
-          <div className="text-xs text-slate-500 mb-2">주인공/등장인물을 설명해 주세요. (예: 2025년 12월을 맞이한 달력. 감정이 있는 사물로, 한 해의 끝자락에서 스스로의 의미를 고민한다.)</div>
-          <textarea
-            id="character"
-            value={characterConfig}
-            onChange={(e) => setCharacterConfig(e.target.value)}
-            placeholder="예) 2025년 12월을 맞이한 달력. 감정이 있는 사물로, 한 해의 끝자락에서 스스로의 의미를 고민한다."
-            className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all min-h-[100px] text-sm resize-y"
-            required
-            disabled={isLoading}
-          />
-        </div>
-        {/* 시나리오 내용 */}
-        <div>
-          <label htmlFor="scenario" className="block text-sm font-bold text-slate-700 mb-2">
-            4. 시나리오 내용 <span className="text-slate-400 text-xs font-normal ml-1">(옵션)</span>
-          </label>
-          <div className="text-xs text-slate-500 mb-2">줄거리/상황을 자유롭게 입력해 주세요. (예: 연말을 맞아 달력이 스스로의 존재 이유를 찾는 여정을 그린다.)</div>
-          <textarea
-            id="scenario"
-            value={scenarioConfig}
-            onChange={(e) => setScenarioConfig(e.target.value)}
-            placeholder="예) 연말을 맞아 달력이 스스로의 존재 이유를 찾는 여정을 그린다."
-            className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all min-h-[80px] text-sm resize-y"
-            disabled={isLoading}
-          />
-        </div>
-
-        <button
-          type="submit"
-          disabled={isLoading || !characterConfig.trim()}
-          className={`w-full py-3 px-6 rounded-lg text-white font-bold text-lg transition-all shadow-md
-            ${isLoading 
-              ? 'bg-slate-400 cursor-not-allowed' 
-              : 'bg-indigo-600 hover:bg-indigo-700 hover:shadow-lg active:scale-[0.99]'
-            }`}
-        >
-          {isLoading ? (
-            <span className="flex items-center justify-center gap-2">
-              <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
-              작가님이 집필중입니다...
-            </span>
-          ) : '시나리오 생성하기'}
-        </button>
-      </div>
-    </form>
-  );
-};
 </file>
 
 </files>

@@ -138,9 +138,16 @@ const SceneCell: React.FC<{ scene: Scene; data: ScenarioDetail; isKo: boolean }>
   );
 };
 
-export const ScenarioView: React.FC<ScenarioViewProps> = ({ data }) => {
+export const ScenarioView: React.FC<ScenarioViewProps & { scenarioLanguage?: string }> = ({ data, scenarioLanguage }) => {
   return (
     <div className="w-full space-y-8 pb-12">
+
+      {/* 시나리오 언어 설정값 표시 */}
+      <div className="mb-4">
+        <span className="inline-block bg-blue-50 text-blue-700 px-3 py-1 rounded-md text-sm font-semibold border border-blue-100">
+          시나리오 언어: {scenarioLanguage || '한글'}
+        </span>
+      </div>
 
       {/* 1. Basic Info Section */}
       <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
